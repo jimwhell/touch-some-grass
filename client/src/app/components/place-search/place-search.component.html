@@ -1,0 +1,33 @@
+<form [formGroup]="queryForm" (ngSubmit)="submitQuery()">
+  <div>
+    <label for="query">Search for places</label>
+    <input id="query" type="text" formControlName="query" />
+  </div>
+  <button type="submit" [disabled]="!queryForm.valid">Search</button>
+</form>
+
+@if (places$ | async; as queryResult) {
+<div class="search-results">
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Link</th>
+        <th>Image</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (place of queryResult.places; track place.id) {
+      <tr class="border-1">
+        <td>{{ place.displayName.text }}</td>
+        <td>{{ place.formattedAddress }}</td>
+        <td>{{ place.googleMapsUri }}</td>
+        <td>{{ place.id }}</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+}
