@@ -7,6 +7,7 @@
 </form>
 
 @if (places$ | async; as queryResult) {
+<!-- <pre>{{ queryResult | json }}</pre> -->
 <div class="search-results">
   <table class="w-full">
     <thead>
@@ -18,12 +19,17 @@
       </tr>
     </thead>
     <tbody>
-      @for (place of queryResult.places; track place.id) {
+      @for (place of queryResult; track place.id) {
       <tr class="border-1">
-        <td>{{ place.displayName.text }}</td>
+        <td>{{ place.displayName }}</td>
         <td>{{ place.formattedAddress }}</td>
         <td>{{ place.googleMapsUri }}</td>
-        <td>{{ place.id }}</td>
+        <td>
+          <img
+            [src]="getPhotoFromReference(place.photo)"
+            alt="{{ place.displayName }}"
+          />
+        </td>
       </tr>
       }
     </tbody>
