@@ -1,9 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
 import { json } from "body-parser";
-import searchRoutes from "./routes/searchRoutes";
+import placeRoutes from "./routes/placeRoutes";
 import dotenv from "dotenv";
 import cors from "cors";
 import { CustomError } from "./errors/customError";
+import morgan from "morgan";
 
 dotenv.config();
 
@@ -16,16 +17,16 @@ const options: cors.CorsOptions = {
 
 app.use(cors(options));
 app.use(json());
+app.use(morgan("tiny"));
 
 const PORT = process.env.PORT || 3000;
 
-app.use("/api/places", searchRoutes);
+app.use("/api/places", placeRoutes);
 
 app.use(
   (error: CustomError, req: Request, res: Response, next: NextFunction) => {
-    res.status
-      ? res.status(error.statusCode).send(error.message)
-      : res.status(500).send(error.message);
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).send(error.message);
   }
 );
 

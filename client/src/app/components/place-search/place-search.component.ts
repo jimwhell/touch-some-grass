@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { QueryService } from '../../services/query.service';
 import { PlaceQuery } from '../../interfaces/place-query';
-import { PlaceResponse } from '../../interfaces/place-response';
+import { Place } from '../../interfaces/place';
 import { AsyncPipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
 
@@ -23,7 +23,7 @@ export class PlaceSearchComponent {
   // Inject FormBuilder instance using Angular's inject function
   private formBuilder = inject(FormBuilder);
 
-  places$!: Observable<PlaceResponse>;
+  places$!: Observable<Place[]>;
 
   // Define a reactive form with a single 'query' input field and a required validator
   queryForm = this.formBuilder.group({
@@ -57,5 +57,9 @@ export class PlaceSearchComponent {
         },
       });
     }
+  }
+
+  getPhotoFromReference(photoReference: string) {
+    return this.queryService.getPhoto(photoReference);
   }
 }
