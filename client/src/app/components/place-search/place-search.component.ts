@@ -59,6 +59,7 @@ export class PlaceSearchComponent {
     }
   }
 
+  //method to retrieve the endpoint URL from the queryService to acquire the place image file
   getPhotoFromReference(photoReference: string) {
     return this.queryService.getPhoto(photoReference);
   }

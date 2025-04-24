@@ -8,6 +8,7 @@ import { Place } from "../models/place";
 import { PlacePhoto } from "../models/placePhoto";
 import { TextSearchResponse } from "../models/text-search-response";
 import { PlaceResponseDetail } from "../models/placeResponseDetail";
+import { validationResult, matchedData } from "express-validator";
 
 dotenv.config();
 
@@ -23,11 +24,26 @@ if (!GOOGLE_PLACES_API_KEY) {
 //submit a query to the places api for places, then return the response to the client
 export const searchPlaces = asyncHandler(
   async (
-    req: Request<unknown, unknown, SearchQuery, unknown>,
+    req: Request<
+      Record<string, any>,
+      unknown,
+      SearchQuery,
+      Record<string, any>
+    >,
     res: Response
   ) => {
+    const result = validationResult(req);
+
+    if (!result.isEmpty()) {
+      const resultArray = result.array();
+      const errorMessages = resultArray.map((result) => result.msg);
+      res.status(400).send({ error: errorMessages });
+      return;
+    }
+
     //extract the query from the request body
-    const { query } = req.body;
+    const data: Record<string, SearchQuery> = matchedData(req);
+    const query = data.query;
 
     if (!query) {
       throw new CustomError("No query found", 404);
@@ -38,7 +54,7 @@ export const searchPlaces = asyncHandler(
       PLACES_API_URL + ":searchText", //append searchText to API url
       {
         textQuery: query, // query to be passed
-        maxResultCount: 8,
+        maxResultCount: 10, //number of results to be returned
       },
       {
         headers: {
@@ -54,14 +70,13 @@ export const searchPlaces = asyncHandler(
       throw new CustomError("Invalid response from Places", 500);
     }
 
-    console.log(textSearchResult.data.places);
-
+    //extract the first photo reference from the photos array of each place object
     const places: Place[] = textSearchResult.data.places
       .filter(
         (place: PlaceResponseDetail) => place.photos && place.photos.length > 0
-      )
+      ) //only return places with available photos
       .map((place: PlaceResponseDetail) => {
-        const photoName: string = place.photos[0].name;
+        const photoName: string = place.photos[0].name; //extract the first photo's reference from the photos array
         return {
           id: place.id,
           formattedAddress: place.formattedAddress,
@@ -75,22 +90,39 @@ export const searchPlaces = asyncHandler(
   }
 );
 
+//route handler to fetch the place photo file from the Places photos API endpoint
 export const getPlacePhoto = asyncHandler(
   async (
-    req: Request<unknown, unknown, unknown, { photoReference?: string }>,
+    req: Request<
+      Record<string, any>,
+      unknown,
+      unknown,
+      { photoReference: string }
+    >,
     res: Response
   ) => {
-    const { photoReference } = req.query;
+    const result = validationResult(req);
 
+    if (!result.isEmpty()) {
+      const resultArray = result.array();
+      const errorMessages = resultArray.map((result) => result.msg);
+      res.status(400).send({ error: errorMessages });
+      return;
+    }
+
+    const data: Record<string, any> = matchedData(req);
+
+    const photoReference: string = data.photoReference;
     if (!photoReference) {
       throw new CustomError("Photo reference not found", 404);
     }
 
-    const url: string = `https://places.googleapis.com/v1/${photoReference}/media?key=${GOOGLE_PLACES_API_KEY}&maxHeightPx=450&maxWidthPx=450`;
+    const url: string = `https://places.googleapis.com/v1/${photoReference}/media?key=${GOOGLE_PLACES_API_KEY}&maxHeightPx=450&maxWidthPx=450`; //photos endpoint
 
+    //execute the request for the image file
     const photoResponse: AxiosResponse<ArrayBuffer> = await axios.get(url, {
       responseType: "arraybuffer",
-      headers: { Accept: "image/jpeg" },
+      headers: { Accept: "image/jpeg" }, //only return image files
     });
 
     if (!photoResponse) {
