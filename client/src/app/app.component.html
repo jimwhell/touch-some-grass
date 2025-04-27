@@ -1,3 +1,11 @@
-<div>
-  <app-place-search></app-place-search>
+<div class="relative">
+  <div
+    class="search-container absolute left-10 top-10 z-1 w-md rounded-xl bg-white"
+  >
+    <app-place-search></app-place-search>
+    <app-places-list></app-places-list>
+  </div>
+  <div class="map-container">
+    <app-map class="w-screen h-screen block"></app-map>
+  </div>
 </div>
