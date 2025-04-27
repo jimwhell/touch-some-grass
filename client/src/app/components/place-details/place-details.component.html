@@ -5,6 +5,11 @@
     <div class="name-container">
       <h2 class="text-sm">{{ place()?.displayName }}</h2>
     </div>
+    <div class="category-container">
+      <h3 class="text-xs text-gray-500 font-semibold">
+        {{ getFormattedType() | titlecase }}
+      </h3>
+    </div>
     <div class="address-container w-3/4 text-black">
       <h3 class="text-xs text-gray-500 text-opacity-50">
         {{ place()?.formattedAddress }}
