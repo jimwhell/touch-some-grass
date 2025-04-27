@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Component, inject, OnInit } from '@angular/core';
+import { Observable, of, map } from 'rxjs';
 import {
   FormGroup,
   FormControl,
@@ -10,12 +10,11 @@ import {
 import { QueryService } from '../../services/query.service';
 import { PlaceQuery } from '../../interfaces/place-query';
 import { Place } from '../../interfaces/place';
-import { AsyncPipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-place-search',
-  imports: [ReactiveFormsModule, AsyncPipe, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './place-search.component.html',
   styleUrl: './place-search.component.css',
 })
@@ -30,7 +29,9 @@ export class PlaceSearchComponent {
     query: ['', Validators.required],
   });
 
-  constructor(private queryService: QueryService) {}
+  constructor(private queryService: QueryService) {
+    this.places$ = this.queryService.places$;
+  }
 
   // Getter to easily access the 'query' form control
   get query() {
@@ -48,12 +49,9 @@ export class PlaceSearchComponent {
 
       // Call the service to fetch places, and handle response or error
       this.queryService.searchPlaces(requestBody).subscribe({
-        next: (response) => {
-          console.log(response);
-          this.places$ = of(response); // Update UI with fetched places
-        },
-        error: (error) => {
-          console.error(error); // Handle error appropriately
+        next: () => {},
+        error: (err) => {
+          console.error('Error fetching search results');
         },
       });
     }
