@@ -8,4 +8,5 @@ export interface PlaceResponseDetail {
     text: string;
   };
   photos: PlacePhoto[];
+  primaryType: string;
 }
