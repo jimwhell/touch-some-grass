@@ -18,7 +18,6 @@ export class QueryService {
     return this.apiService.post<Place[], PlaceQuery>(this.apiUrl, query).pipe(
       tap((places: Place[]) => {
         this.placesSubject.next(places);
-        console.log(`places received: ${places}`);
       })
     );
   }
