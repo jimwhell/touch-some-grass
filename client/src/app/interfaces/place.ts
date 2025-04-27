@@ -4,4 +4,5 @@ export interface Place {
   googleMapsUri: string;
   displayName: string;
   photo: string;
+  primaryType: string;
 }
