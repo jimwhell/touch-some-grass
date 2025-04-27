@@ -32,6 +32,8 @@ export const searchPlaces = asyncHandler(
     >,
     res: Response
   ) => {
+    console.log("Request body:", req.body);
+    console.log("Content-Type:", req.headers["content-type"]);
     const result = validationResult(req);
 
     if (!result.isEmpty()) {
@@ -44,6 +46,7 @@ export const searchPlaces = asyncHandler(
     //extract the query from the request body
     const data: Record<string, SearchQuery> = matchedData(req);
     const query = data.query;
+    console.log(`query: ${query}`);
 
     if (!query) {
       throw new CustomError("No query found", 404);
@@ -54,7 +57,7 @@ export const searchPlaces = asyncHandler(
       PLACES_API_URL + ":searchText", //append searchText to API url
       {
         textQuery: query, // query to be passed
-        maxResultCount: 10, //number of results to be returned
+        maxResultCount: 3, //number of results to be returned
       },
       {
         headers: {
@@ -65,6 +68,8 @@ export const searchPlaces = asyncHandler(
         },
       }
     );
+
+    console.log("API response received");
 
     if (!textSearchResult) {
       throw new CustomError("Invalid response from Places", 500);
@@ -85,6 +90,8 @@ export const searchPlaces = asyncHandler(
           photo: photoName,
         };
       });
+
+    console.log(`Type of response: ${typeof places}`);
 
     res.status(200).send(places);
   }
@@ -117,7 +124,7 @@ export const getPlacePhoto = asyncHandler(
       throw new CustomError("Photo reference not found", 404);
     }
 
-    const url: string = `https://places.googleapis.com/v1/${photoReference}/media?key=${GOOGLE_PLACES_API_KEY}&maxHeightPx=450&maxWidthPx=450`; //photos endpoint
+    const url: string = `https://places.googleapis.com/v1/${photoReference}/media?key=${GOOGLE_PLACES_API_KEY}&maxHeightPx=130&maxWidthPx=130`; //photos endpoint
 
     //execute the request for the image file
     const photoResponse: AxiosResponse<ArrayBuffer> = await axios.get(url, {

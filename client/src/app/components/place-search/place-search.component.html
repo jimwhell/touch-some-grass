@@ -1,39 +1,47 @@
-<form [formGroup]="queryForm" (ngSubmit)="submitQuery()">
-  <div>
-    <label for="query">Search for places</label>
-    <input id="query" type="text" formControlName="query" />
-  </div>
-  <button type="submit" [disabled]="!queryForm.valid">Search</button>
-</form>
-
-@if (places$ | async; as queryResult) {
-<!-- <pre>{{ queryResult | json }}</pre> -->
-<div class="search-results">
-  <table class="w-full">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Link</th>
-        <th>Image</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (place of queryResult; track place.id) {
-      <tr class="border-1">
-        <td>{{ place.displayName }}</td>
-        <td>{{ place.formattedAddress }}</td>
-        <td>{{ place.googleMapsUri }}</td>
-        <td>
-          <img
-            [src]="getPhotoFromReference(place.photo)"
-            alt="{{ place.displayName }}"
-          />
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
+<div class="form-container flex flex-col justify-center m-2 px-7 py-4">
+  <form [formGroup]="queryForm" (ngSubmit)="submitQuery()">
+    <div class="flex flex-col">
+      <label class="font-light" for="query">Search for places</label>
+      <div class="search-bar flex my-4 items-center bg-red-700 rounded-lg">
+        <input
+          class="py-2 px-3 w-4/5 bg-gray-100 outline-none rounded-"
+          id="query"
+          type="text"
+          formControlName="query"
+        />
+        <button
+          class="w-1/5 flex justify-center hover:cursor-pointer"
+          type="submit"
+          [disabled]="!queryForm.valid"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="#fcfcfc"
+            version="1.1"
+            id="Capa_1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 490.4 490.4"
+            xml:space="preserve"
+            stroke="#fcfcfc"
+            stroke-width="24.52"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <g>
+                <path
+                  d="M484.1,454.796l-110.5-110.6c29.8-36.3,47.6-82.8,47.6-133.4c0-116.3-94.3-210.6-210.6-210.6S0,94.496,0,210.796 s94.3,210.6,210.6,210.6c50.8,0,97.4-18,133.8-48l110.5,110.5c12.9,11.8,25,4.2,29.2,0C492.5,475.596,492.5,463.096,484.1,454.796z M41.1,210.796c0-93.6,75.9-169.5,169.5-169.5s169.6,75.9,169.6,169.5s-75.9,169.5-169.5,169.5S41.1,304.396,41.1,210.796z"
+                ></path>
+              </g>
+            </g>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </form>
 </div>
-
-}
