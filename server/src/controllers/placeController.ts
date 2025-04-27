@@ -64,7 +64,7 @@ export const searchPlaces = asyncHandler(
           "Content-Type": "application/json",
           "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
           "X-Goog-FieldMask":
-            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos", //place details to be received
+            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType", //place details to be received
         },
       }
     );
@@ -88,6 +88,7 @@ export const searchPlaces = asyncHandler(
           googleMapsUri: place.googleMapsUri,
           displayName: place.displayName.text,
           photo: photoName,
+          primaryType: place.primaryType,
         };
       });
 
