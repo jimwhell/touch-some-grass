@@ -57,7 +57,7 @@ export const searchPlaces = asyncHandler(
       PLACES_API_URL + ":searchText", //append searchText to API url
       {
         textQuery: query, // query to be passed
-        maxResultCount: 3, //number of results to be returned
+        maxResultCount: 5, //number of results to be returned
       },
       {
         headers: {
