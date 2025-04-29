@@ -64,19 +64,17 @@ export const searchPlaces = asyncHandler(
           "Content-Type": "application/json",
           "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
           "X-Goog-FieldMask":
-            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType", //place details to be received
+            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType,places.location", //place details to be received
         },
       }
     );
-
-    console.log("API response received");
 
     if (!textSearchResult) {
       throw new CustomError("Invalid response from Places", 500);
     }
 
     //extract the first photo reference from the photos array of each place object
-    const places: Place[] = textSearchResult.data.places
+    const places: any[] = textSearchResult.data.places
       .filter(
         (place: PlaceResponseDetail) => place.photos && place.photos.length > 0
       ) //only return places with available photos
@@ -89,10 +87,9 @@ export const searchPlaces = asyncHandler(
           displayName: place.displayName.text,
           photo: photoName,
           primaryType: place.primaryType,
+          location: place.location,
         };
       });
-
-    console.log(`Type of response: ${typeof places}`);
 
     res.status(200).send(places);
   }
