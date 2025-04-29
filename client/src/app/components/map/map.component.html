@@ -4,8 +4,16 @@
   [options]="options"
   width="100%"
   height="100%"
+  #mapRef="googleMap"
 >
   @for (marker of markers; track marker;) {
   <map-marker [position]="marker"></map-marker>
   }
 </google-map>
+
+@if (selectedPlace()) {
+<map-info-window>
+  <h2 class="text-red-500">{{ selectedPlace()?.displayName }}</h2>
+</map-info-window>
+
+}
