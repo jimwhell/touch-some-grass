@@ -5,4 +5,8 @@ export interface Place {
   displayName: string;
   photo: string;
   primaryType?: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
 }

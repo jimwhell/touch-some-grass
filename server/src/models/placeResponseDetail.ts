@@ -9,4 +9,8 @@ export interface PlaceResponseDetail {
   };
   photos: PlacePhoto[];
   primaryType?: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
 }

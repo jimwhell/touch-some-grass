@@ -2,7 +2,10 @@
 <div class="places-list-container bg-white rounded-xl">
   @for (place of queryResult; track place.id) {
   <div class="results-container">
-    <app-place-details [place]="place"></app-place-details>
+    <app-place-details
+      [place]="place"
+      (placeCardClicked)="reEmitCardClick($event)"
+    ></app-place-details>
   </div>
   }
 </div>

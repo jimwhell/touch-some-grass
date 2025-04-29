@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OutputEmitterRef, output } from '@angular/core';
 import { PlaceDetailsComponent } from '../place-details/place-details.component';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
@@ -13,8 +13,14 @@ import { QueryService } from '../../services/query.service';
 })
 export class PlacesListComponent {
   places$!: Observable<Place[]>;
+  placeCardClicked: OutputEmitterRef<Place> = output<Place>();
 
   constructor(private queryService: QueryService) {
     this.places$ = this.queryService.places$;
+  }
+
+  reEmitCardClick(place: Place) {
+    console.log('card clicked in places-list', place);
+    this.placeCardClicked.emit(place);
   }
 }

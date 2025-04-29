@@ -3,9 +3,11 @@
     class="search-container absolute left-10 top-10 z-1 w-md rounded-xl bg-white"
   >
     <app-place-search></app-place-search>
-    <app-places-list></app-places-list>
+    <app-places-list
+      (placeCardClicked)="assignSelectedPlace($event)"
+    ></app-places-list>
   </div>
   <div class="map-container">
-    <app-map class="w-screen h-screen block"></app-map>
+    <app-map [selectedPlace]="place" class="w-screen h-screen block"></app-map>
   </div>
 </div>
