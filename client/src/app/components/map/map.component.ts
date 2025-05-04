@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   input,
   InputSignal,
@@ -10,45 +11,99 @@ import {
   GoogleMap,
   GoogleMapsModule,
   MapInfoWindow,
-  MapMarker,
+  MapDirectionsRenderer,
+  MapDirectionsService,
+  MapAdvancedMarker,
 } from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
 import { Place } from '../../interfaces/place';
+import { Observable, map } from 'rxjs';
+import { ExpandedPlace } from '../../interfaces/expanded-place';
+import { MapPlaceCardComponent } from '../map-place-card/map-place-card.component';
 
 @Component({
   selector: 'app-map',
-  imports: [GoogleMapsModule, CommonModule],
+  standalone: true,
+  imports: [GoogleMapsModule, CommonModule, MapPlaceCardComponent],
   templateUrl: './map.component.html',
-  styleUrl: './map.component.css',
+  styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnChanges {
+export class MapComponent implements OnChanges, AfterViewInit {
   @ViewChild('mapRef') mapRef!: GoogleMap;
-  selectedPlace: InputSignal<Place | undefined> = input<Place>();
+  isViewInitialized: boolean = false;
+  pixelOffset: google.maps.Size = new google.maps.Size(0, -30);
+  directionsResult$!: Observable<google.maps.DirectionsResult | undefined>;
+  selectedPlace: InputSignal<ExpandedPlace | undefined> =
+    input<ExpandedPlace>();
   center: google.maps.LatLngLiteral = { lat: 37.7749, lng: -122.4194 };
   zoom: number = 10;
-  markers = [
-    { lat: 40.73061, lng: -73.935242 },
-    { lat: 40.74988, lng: -73.968285 },
-  ];
+  formattedOperationalStatus!: string;
+  markerPosition!: google.maps.LatLngLiteral;
+  markerOptions: google.maps.marker.AdvancedMarkerElementOptions = {
+    gmpDraggable: false,
+    title: 'Selected Place',
+  };
+
+  constructor(private mapDirectionsService: MapDirectionsService) {}
 
   options: google.maps.MapOptions = {
     fullscreenControl: false,
     mapTypeControl: false,
   };
 
+  ngAfterViewInit(): void {
+    this.isViewInitialized = true;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
-    this.assignCenter();
+    if (this.isViewInitialized) {
+      this.assignCenter();
+    }
+  }
+
+  addMarker(placeLocation: google.maps.LatLngLiteral) {
+    this.markerPosition = placeLocation;
   }
 
   assignCenter() {
     const placeLocation = this.selectedPlace()?.location;
-    console.log('place location: ', placeLocation);
     if (placeLocation) {
-      this.mapRef.panTo({
+      const position = {
         lat: placeLocation.latitude,
         lng: placeLocation.longitude,
-      });
-      this.zoom = 18;
+      };
+      this.addMarker(position);
+      this.mapRef.panTo(position);
+      // this.renderDirections(position);
+      this.zoom = 20;
+      this.getFormattedOperationalStatus();
     }
+  }
+
+  // renderDirections(placeLocation: any) {
+  //   console.log(placeLocation);
+  //   const request: google.maps.DirectionsRequest = {
+  //     destination: {
+  //       lat: placeLocation.lat,
+  //       lng: placeLocation.lng,
+  //     },
+  //     origin: { lat: 15.1097476, lng: 120.61169979999998 },
+  //     travelMode: google.maps.TravelMode.DRIVING,
+  //   };
+  //   this.directionsResult$ = this.mapDirectionsService
+  //     .route(request)
+  //     .pipe(map((response) => response.result));
+  // }
+
+  getFormattedOperationalStatus(): void {
+    const operationalStatus: boolean | undefined =
+      this.selectedPlace()?.current_opening_hours?.open_now;
+
+    this.formattedOperationalStatus =
+      operationalStatus === true
+        ? 'Open now'
+        : operationalStatus === false
+        ? 'Closed'
+        : 'Unavailable Operational Status';
   }
 }
