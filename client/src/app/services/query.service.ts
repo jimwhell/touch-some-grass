@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { PlaceQuery } from '../interfaces/place-query';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Place } from '../interfaces/place';
+import { PlaceDetail } from '../interfaces/place-detail';
 @Injectable({
   providedIn: 'root',
 })
@@ -27,4 +28,12 @@ export class QueryService {
     const baseUrl = this.apiService.baseUrl;
     return `${baseUrl}${this.apiUrl}/photo?photoReference=${photoReference}`;
   }
+
+  getPlaceDetails(placeId: string): Observable<PlaceDetail> {
+    return this.apiService.get(`${this.apiUrl}/${placeId}`);
+  }
+
+  // getUserLocation() {
+  //   return this.http.get('')
+  // }
 }
