@@ -1,6 +1,8 @@
 import { PlacePhoto } from "./placePhoto";
 
-export interface PlaceResponseDetail {
+// //represents the details of the data received from the initial Places
+// API text search.
+export interface TextSearchResponseDetail {
   id: string;
   formattedAddress: string;
   googleMapsUri: string;

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Place } from '../../interfaces/place';
 import { QueryService } from '../../services/query.service';
+import { ExpandedPlace } from '../../interfaces/expanded-place';
 
 @Component({
   selector: 'app-places-list',
@@ -13,14 +14,14 @@ import { QueryService } from '../../services/query.service';
 })
 export class PlacesListComponent {
   places$!: Observable<Place[]>;
-  placeCardClicked: OutputEmitterRef<Place> = output<Place>();
+  placeCardClicked: OutputEmitterRef<ExpandedPlace> = output<ExpandedPlace>();
 
   constructor(private queryService: QueryService) {
     this.places$ = this.queryService.places$;
   }
 
-  reEmitCardClick(place: Place) {
-    console.log('card clicked in places-list', place);
-    this.placeCardClicked.emit(place);
+  reEmitCardClick(expandedPlace: ExpandedPlace) {
+    console.log('card clicked in places-list', expandedPlace);
+    this.placeCardClicked.emit(expandedPlace);
   }
 }

@@ -7,8 +7,10 @@ import { CustomError } from "../errors/customError";
 import { Place } from "../models/place";
 import { PlacePhoto } from "../models/placePhoto";
 import { TextSearchResponse } from "../models/text-search-response";
-import { PlaceResponseDetail } from "../models/placeResponseDetail";
+import { TextSearchResponseDetail } from "../models/text-search-response-detail";
 import { validationResult, matchedData } from "express-validator";
+import { PlaceDetailsResponseDetails } from "../models/place-details-response-details";
+import { PlaceDetails } from "../models/place-details";
 
 dotenv.config();
 
@@ -21,7 +23,7 @@ if (!GOOGLE_PLACES_API_KEY) {
   throw new CustomError("Places API key not found", 500);
 }
 
-//submit a query to the places api for places, then return the response to the client
+//submit a query to the places api for places, retrieve minimal place details, then return the response to the client.
 export const searchPlaces = asyncHandler(
   async (
     req: Request<
@@ -76,9 +78,10 @@ export const searchPlaces = asyncHandler(
     //extract the first photo reference from the photos array of each place object
     const places: any[] = textSearchResult.data.places
       .filter(
-        (place: PlaceResponseDetail) => place.photos && place.photos.length > 0
+        (place: TextSearchResponseDetail) =>
+          place.photos && place.photos.length > 0
       ) //only return places with available photos
-      .map((place: PlaceResponseDetail) => {
+      .map((place: TextSearchResponseDetail) => {
         const photoName: string = place.photos[0].name; //extract the first photo's reference from the photos array
         return {
           id: place.id,
@@ -135,5 +138,36 @@ export const getPlacePhoto = asyncHandler(
     }
 
     res.status(200).send(photoResponse.data);
+  }
+);
+
+export const getPlaceDetails = asyncHandler(
+  async (
+    req: Request<{ placeId: string }, unknown, unknown, unknown>,
+    res: Response<PlaceDetails>
+  ) => {
+    const { placeId } = req.params;
+
+    if (!placeId) {
+      throw new CustomError("Place ID not found", 400);
+    }
+
+    const url: string = `https://maps.googleapis.com/maps/api/place/details/json?fields=current_opening_hours/open_now,current_opening_hours/weekday_text,reviews,editorial_summary/overview&place_id=${placeId}&key=${GOOGLE_PLACES_API_KEY}`;
+
+    //create place details request
+    const placeDetailsResult: AxiosResponse =
+      await axios.get<PlaceDetailsResponseDetails>(url);
+
+    if (!placeDetailsResult) {
+      throw new CustomError(
+        `No place details found for place with a place ID of: ${placeId} `,
+        502
+      );
+    }
+
+    const placeDetails: PlaceDetails = placeDetailsResult.data.result;
+    console.log("Place details: ", placeDetails);
+
+    res.status(200).send(placeDetails);
   }
 );

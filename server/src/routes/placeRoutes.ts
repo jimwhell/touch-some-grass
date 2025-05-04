@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { getPlacePhoto, searchPlaces } from "../controllers/placeController";
+import {
+  getPlacePhoto,
+  searchPlaces,
+  getPlaceDetails,
+} from "../controllers/placeController";
 import { checkSchema } from "express-validator";
 import { queryValidationSchema } from "../utils/validationSchemas/querySchema";
 import { photoReferenceValidationSchema } from "../utils/validationSchemas/photoReferenceSchema";
@@ -14,4 +18,5 @@ router.get(
   getPlacePhoto
 );
 
+router.get("/:placeId", getPlaceDetails);
 export default router;

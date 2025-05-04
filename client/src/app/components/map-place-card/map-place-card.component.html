@@ -1,0 +1,14 @@
+<div class="place-container bg-white w-[300px] h-[400px] rounded-xl">
+  <div class="image-container">
+    <img
+      class="w-full rounded-t-xl"
+      src="{{ selectedPlace()?.photo }}"
+      alt="{{ selectedPlace()?.displayName }}"
+    />
+  </div>
+  <div class="body-container p-4">
+    <div class="name-container">
+      <h2>{{ selectedPlace()?.displayName }}</h2>
+    </div>
+  </div>
+</div>

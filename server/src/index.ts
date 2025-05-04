@@ -26,6 +26,7 @@ app.use("/api/places", placeRoutes);
 app.use(
   (error: CustomError, req: Request, res: Response, next: NextFunction) => {
     const statusCode = error.statusCode || 500;
+    console.error("Error: ", error.message);
     res.status(statusCode).send(error.message);
   }
 );
