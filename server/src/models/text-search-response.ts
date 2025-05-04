@@ -1,5 +1,5 @@
-import { PlaceResponseDetail } from "./placeResponseDetail";
+import { TextSearchResponseDetail } from "./text-search-response-detail";
 
 export interface TextSearchResponse {
-  places: PlaceResponseDetail[];
+  places: TextSearchResponseDetail[];
 }
