@@ -8,6 +8,9 @@
     ></app-places-list>
   </div>
   <div class="map-container">
-    <app-map [selectedPlace]="place" class="w-screen h-screen block"></app-map>
+    <app-map
+      [selectedPlace]="expandedPlace"
+      class="w-screen h-screen block"
+    ></app-map>
   </div>
 </div>
