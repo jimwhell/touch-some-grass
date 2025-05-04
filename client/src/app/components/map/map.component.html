@@ -1,19 +1,24 @@
 <google-map
+  class="relative"
   [center]="center"
   [zoom]="zoom"
   [options]="options"
   width="100%"
   height="100%"
+  mapId="6e5e9d44880c7346"
   #mapRef="googleMap"
 >
-  @for (marker of markers; track marker;) {
-  <map-marker [position]="marker"></map-marker>
+  @if(directionsResult$ | async; as directionsResult) {
+  <map-directions-renderer [directions]="directionsResult" />
+  } @if (markerPosition) {
+  <map-advanced-marker [position]="markerPosition"></map-advanced-marker>
   }
 </google-map>
 
 @if (selectedPlace()) {
-<map-info-window>
-  <h2 class="text-red-500">{{ selectedPlace()?.displayName }}</h2>
-</map-info-window>
-
+<app-map-place-card
+  [selectedPlace]="selectedPlace()"
+  class="absolute right-40 bottom-70"
+>
+</app-map-place-card>
 }
