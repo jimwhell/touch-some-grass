@@ -10,7 +10,7 @@ export interface PlaceDetailsResponseDetails {
     editorial_summary?: {
       overview: string;
     };
-     reviews?: PlaceReview[];
+    reviews?: PlaceReview[];
   };
   status: string;
 }
