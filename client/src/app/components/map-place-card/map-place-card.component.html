@@ -1,14 +1,27 @@
-<div class="place-container bg-white w-[300px] h-[400px] rounded-xl">
+<div class="place-container bg-white w-[400px] h-[680px] rounded-xl">
   <div class="image-container">
     <img
-      class="w-full rounded-t-xl"
+      class="w-full h-[250px] rounded-t-xl"
       src="{{ selectedPlace()?.photo }}"
       alt="{{ selectedPlace()?.displayName }}"
     />
   </div>
-  <div class="body-container p-4">
-    <div class="name-container">
-      <h2>{{ selectedPlace()?.displayName }}</h2>
-    </div>
+  <div class="card-header w-full px-6 py-4">
+    <h2 class="text-xl font-light">{{ selectedPlace()?.displayName }}</h2>
+    <h3 class="text-xs text-gray-500 font-semibold">
+      {{ selectedPlace()?.primaryType | titlecase }}
+    </h3>
+  </div>
+  <div class="card-navbar w-full">
+    <ul class="links-container font-light flex justify-around py-2">
+      <li><a routerLink="/overview">Overview</a></li>
+      <li><a routerLink="/reviews">Reviews</a></li>
+    </ul>
+  </div>
+  <div class="body-container w-full px-6 py-4">
+    <router-outlet class="w-full"></router-outlet>
+    <!-- <div class="name-container">
+        <h2>{{ selectedPlace()?.displayName }}</h2>
+      </div> -->
   </div>
 </div>
