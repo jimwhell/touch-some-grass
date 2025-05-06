@@ -34,8 +34,6 @@ export const searchPlaces = asyncHandler(
     >,
     res: Response
   ) => {
-    console.log("Request body:", req.body);
-    console.log("Content-Type:", req.headers["content-type"]);
     const result = validationResult(req);
 
     if (!result.isEmpty()) {
@@ -66,7 +64,7 @@ export const searchPlaces = asyncHandler(
           "Content-Type": "application/json",
           "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
           "X-Goog-FieldMask":
-            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType,places.location", //place details to be received
+            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType,places.location,places.current_opening_hours", //place details to be received
         },
       }
     );
@@ -75,24 +73,52 @@ export const searchPlaces = asyncHandler(
       throw new CustomError("Invalid response from Places", 500);
     }
 
-    //extract the first photo reference from the photos array of each place object
-    const places: any[] = textSearchResult.data.places
-      .filter(
-        (place: TextSearchResponseDetail) =>
-          place.photos && place.photos.length > 0
-      ) //only return places with available photos
-      .map((place: TextSearchResponseDetail) => {
-        const photoName: string = place.photos[0].name; //extract the first photo's reference from the photos array
-        return {
-          id: place.id,
-          formattedAddress: place.formattedAddress,
-          googleMapsUri: place.googleMapsUri,
-          displayName: place.displayName.text,
-          photo: photoName,
-          primaryType: place.primaryType,
-          location: place.location,
-        };
-      });
+    //only include places with photos
+    const filteredPlaces = textSearchResult.data.places.filter(
+      (place: TextSearchResponseDetail) =>
+        place.photos && place.photos.length > 0
+    );
+
+    //return an array of place objects with the operationalStatus property by making an axios call to the Place Details API for each place object
+    const places: Place[] = await Promise.all(
+      filteredPlaces.map(async (place) => {
+        const photoName = place.photos[0].name;
+        const placeId = place.id;
+
+        try {
+          const { data } = await axios.get(
+            `https://maps.googleapis.com/maps/api/place/details/json`,
+            {
+              params: {
+                fields: "current_opening_hours/open_now",
+                place_id: placeId,
+                key: GOOGLE_PLACES_API_KEY,
+              },
+            }
+          );
+
+          const openNow = data.result?.current_opening_hours?.open_now ?? null;
+
+          //resolve the promise to the
+          return {
+            id: place.id,
+            formattedAddress: place.formattedAddress,
+            googleMapsUri: place.googleMapsUri,
+            displayName: place.displayName.text,
+            open_now: openNow,
+            photo: photoName,
+            primaryType: place.primaryType,
+            location: place.location,
+          };
+        } catch (error: any) {
+          console.error(
+            `Failed to fetch details for place ${placeId}`,
+            error.message
+          );
+          throw new CustomError(error.message, 400);
+        }
+      })
+    );
 
     res.status(200).send(places);
   }
@@ -152,10 +178,10 @@ export const getPlaceDetails = asyncHandler(
       throw new CustomError("Place ID not found", 400);
     }
 
-    const url: string = `https://maps.googleapis.com/maps/api/place/details/json?fields=current_opening_hours/open_now,current_opening_hours/weekday_text,reviews,editorial_summary/overview&place_id=${placeId}&key=${GOOGLE_PLACES_API_KEY}`;
+    const url: string = `https://maps.googleapis.com/maps/api/place/details/json?fields=current_opening_hours/weekday_text,reviews,editorial_summary/overview&place_id=${placeId}&key=${GOOGLE_PLACES_API_KEY}`;
 
     //create place details request
-    const placeDetailsResult: AxiosResponse =
+    const placeDetailsResult: AxiosResponse<PlaceDetailsResponseDetails> =
       await axios.get<PlaceDetailsResponseDetails>(url);
 
     if (!placeDetailsResult) {
@@ -165,8 +191,27 @@ export const getPlaceDetails = asyncHandler(
       );
     }
 
-    const placeDetails: PlaceDetails = placeDetailsResult.data.result;
-    console.log("Place details: ", placeDetails);
+    //destructure current_opening_hours and editorial summary from the place Details response
+    const { current_opening_hours, editorial_summary, ...rest } =
+      placeDetailsResult.data.result;
+
+    //fill the placeDetails object with the remaining fields
+    const placeDetails: PlaceDetails = {
+      ...rest,
+    };
+
+    //conduct type checking and create flattened properties for the new object to be sent to the client, omitting nested properties.
+    if (current_opening_hours?.open_now !== undefined) {
+      placeDetails.open_now = current_opening_hours.open_now;
+    }
+
+    if (Array.isArray(current_opening_hours?.weekday_text)) {
+      placeDetails.weekday_text = current_opening_hours.weekday_text;
+    }
+
+    if (typeof editorial_summary?.overview === "string") {
+      placeDetails.overview = editorial_summary.overview;
+    }
 
     res.status(200).send(placeDetails);
   }

@@ -3,6 +3,7 @@ export interface Place {
   formattedAddress: string;
   googleMapsUri: string;
   displayName: string;
+  open_now: boolean;
   photo: string;
   primaryType?: string;
   location: {

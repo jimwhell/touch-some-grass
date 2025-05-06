@@ -3,7 +3,7 @@ import { PlaceDetailsComponent } from '../place-details/place-details.component'
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Place } from '../../interfaces/place';
-import { QueryService } from '../../services/query.service';
+import { PlaceService } from '../../services/place.service';
 import { ExpandedPlace } from '../../interfaces/expanded-place';
 
 @Component({
@@ -16,8 +16,8 @@ export class PlacesListComponent {
   places$!: Observable<Place[]>;
   placeCardClicked: OutputEmitterRef<ExpandedPlace> = output<ExpandedPlace>();
 
-  constructor(private queryService: QueryService) {
-    this.places$ = this.queryService.places$;
+  constructor(private placeService: PlaceService) {
+    this.places$ = this.placeService.places$;
   }
 
   reEmitCardClick(expandedPlace: ExpandedPlace) {

@@ -1,0 +1,167 @@
+@if (selectedPlace$ | async; as selectedPlace) {
+<div class="place-overview-container w-full flex flex-col gap-7">
+  <div class="summary-container">
+    <p class="text-md font-light">
+      {{ selectedPlace.overview }}
+    </p>
+  </div>
+  <!-- @if (selectedPlace.open_now !== undefined) {
+  <div class="operational-status-container">
+    <p class="text-md font-light">
+      {{ selectedPlace.open_now }}
+    </p>
+  </div>
+  } -->
+  <div class="address-container flex items-center font-light">
+    <div class="icon-container mr-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        version="1.1"
+        width="30"
+        height="30"
+        viewBox="0 0 256 256"
+        xml:space="preserve"
+      >
+        <g
+          style="
+            stroke: none;
+            stroke-width: 0;
+            stroke-dasharray: none;
+            stroke-linecap: butt;
+            stroke-linejoin: miter;
+            stroke-miterlimit: 10;
+            fill: none;
+            fill-rule: nonzero;
+            opacity: 1;
+          "
+          transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)"
+        >
+          <path
+            d="M 45 90 c -1.415 0 -2.725 -0.748 -3.444 -1.966 l -4.385 -7.417 C 28.167 65.396 19.664 51.02 16.759 45.189 c -2.112 -4.331 -3.175 -8.955 -3.175 -13.773 C 13.584 14.093 27.677 0 45 0 c 17.323 0 31.416 14.093 31.416 31.416 c 0 4.815 -1.063 9.438 -3.157 13.741 c -0.025 0.052 -0.053 0.104 -0.08 0.155 c -2.961 5.909 -11.41 20.193 -20.353 35.309 l -4.382 7.413 C 47.725 89.252 46.415 90 45 90 z"
+            style="
+              stroke: none;
+              stroke-width: 1;
+              stroke-dasharray: none;
+              stroke-linecap: butt;
+              stroke-linejoin: miter;
+              stroke-miterlimit: 10;
+              fill: red;
+              fill-rule: nonzero;
+              opacity: 1;
+            "
+            transform=" matrix(1 0 0 1 0 0) "
+            stroke-linecap="round"
+          />
+          <path
+            d="M 45 45.678 c -8.474 0 -15.369 -6.894 -15.369 -15.368 S 36.526 14.941 45 14.941 c 8.474 0 15.368 6.895 15.368 15.369 S 53.474 45.678 45 45.678 z"
+            style="
+              stroke: none;
+              stroke-width: 1;
+              stroke-dasharray: none;
+              stroke-linecap: butt;
+              stroke-linejoin: miter;
+              stroke-miterlimit: 10;
+              fill: rgb(255, 255, 255);
+              fill-rule: nonzero;
+              opacity: 1;
+            "
+            transform=" matrix(1 0 0 1 0 0) "
+            stroke-linecap="round"
+          />
+        </g>
+      </svg>
+    </div>
+    <div class="address-text-container">
+      <p class="text-left ml-2 text-sm">
+        {{ selectedPlace.formattedAddress }}
+      </p>
+    </div>
+  </div>
+  <div
+    class="operational-status-information-container flex gap-4 hover:cursor-pointer"
+    (click)="toggleDropdown()"
+  >
+    <div class="icon-container relative">
+      <svg
+        class=""
+        xmlns="http://www.w3.org/2000/svg"
+        x="0px"
+        y="0px"
+        width="30"
+        height="30"
+        viewBox="0,0,256,256"
+      >
+        <g
+          fill="red"
+          fill-rule="nonzero"
+          stroke="none"
+          stroke-width="1"
+          stroke-linecap="butt"
+          stroke-linejoin="miter"
+          stroke-miterlimit="10"
+          stroke-dasharray=""
+          stroke-dashoffset="0"
+          font-family="none"
+          font-weight="none"
+          font-size="none"
+          text-anchor="none"
+          style="mix-blend-mode: normal"
+        >
+          <g transform="scale(8.53333,8.53333)">
+            <path
+              d="M15,3c-6.627,0 -12,5.373 -12,12c0,6.627 5.373,12 12,12c6.627,0 12,-5.373 12,-12c0,-6.627 -5.373,-12 -12,-12zM16,16h-8.005c-0.55,0 -0.995,-0.445 -0.995,-0.995v-0.011c0,-0.549 0.445,-0.994 0.995,-0.994h6.005v-8.005c0,-0.55 0.445,-0.995 0.995,-0.995h0.011c0.549,0 0.994,0.445 0.994,0.995z"
+            ></path>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="info-container relative flex flex-col justify-center">
+      <div class="button-container flex">
+        <p class="text-sm font-light">
+          {{
+            selectedPlace.open_now === true
+              ? "Open"
+              : selectedPlace.open_now === false
+              ? "Closed"
+              : "Unavailable status"
+          }}
+        </p>
+        <button
+          class="hover:cursor-pointer"
+          type="button"
+          (click)="toggleDropdown()"
+        >
+          <svg
+            (click)="toggleDropdown()"
+            width="20ox"
+            height="20px"
+            viewBox="0 0 48 48"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title>arrowhead-down</title>
+            <g id="Layer_2" data-name="Layer 2">
+              <g id="invisible_box" data-name="invisible box">
+                <rect width="48" height="48" fill="none" />
+              </g>
+              <g id="icons_Q2" data-name="icons Q2">
+                <path
+                  d="M24,27.2,13.4,16.6a1.9,1.9,0,0,0-3,.2,2.1,2.1,0,0,0,.2,2.7l12,11.9a1.9,1.9,0,0,0,2.8,0l12-11.9a2.1,2.1,0,0,0,.2-2.7,1.9,1.9,0,0,0-3-.2Z"
+                />
+              </g>
+            </g>
+          </svg>
+        </button>
+      </div>
+      @if (isDropdownClicked) {
+      <div #dropdown class="dropdown text-sm font-light mt-1">
+        @for (text of selectedPlace.weekday_text; track text) {
+        <p>{{ text }}</p>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+}
