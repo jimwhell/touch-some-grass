@@ -9,6 +9,9 @@ export interface TextSearchResponseDetail {
   displayName: {
     text: string;
   };
+  current_opening_hours: {
+    open_now: boolean;
+  };
   photos: PlacePhoto[];
   primaryType?: string;
   location: {
