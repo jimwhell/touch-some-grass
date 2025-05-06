@@ -6,10 +6,21 @@
     <div class="name-container">
       <h2 class="text-sm">{{ place()?.displayName }}</h2>
     </div>
-    @if (formattedType) {
+    <div class="operational-status-container">
+      <h3 class="text-xs text-red-500 font-semibold">
+        {{
+          place()?.open_now === true
+            ? "Open"
+            : place()?.open_now === false
+            ? "Closed"
+            : "Unavailable status"
+        }}
+      </h3>
+    </div>
+    @if (this.place()?.primaryType) {
     <div class="category-container">
       <h3 class="text-xs text-gray-500 font-semibold">
-        {{ formattedType | titlecase }}
+        {{ this.place()?.primaryType | titlecase }}
       </h3>
     </div>
     }
