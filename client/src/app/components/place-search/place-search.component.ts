@@ -7,7 +7,7 @@ import {
   Validators,
   FormBuilder,
 } from '@angular/forms';
-import { QueryService } from '../../services/query.service';
+import { PlaceService } from '../../services/place.service';
 import { PlaceQuery } from '../../interfaces/place-query';
 import { Place } from '../../interfaces/place';
 import { CommonModule } from '@angular/common';
@@ -29,8 +29,8 @@ export class PlaceSearchComponent {
     query: ['', Validators.required],
   });
 
-  constructor(private queryService: QueryService) {
-    this.places$ = this.queryService.places$;
+  constructor(private placeService: PlaceService) {
+    this.places$ = this.placeService.places$;
   }
 
   // Getter to easily access the 'query' form control
@@ -48,7 +48,7 @@ export class PlaceSearchComponent {
       const requestBody: PlaceQuery = { query: queryValue };
 
       // Call the service to fetch places, and handle response or error
-      this.queryService.searchPlaces(requestBody).subscribe({
+      this.placeService.searchPlaces(requestBody).subscribe({
         next: () => {},
         error: (err) => {
           console.error('Error fetching search results');
@@ -57,8 +57,8 @@ export class PlaceSearchComponent {
     }
   }
 
-  //method to retrieve the endpoint URL from the queryService to acquire the place image file
+  //method to retrieve the endpoint URL from the placeService to acquire the place image file
   getPhotoFromReference(photoReference: string) {
-    return this.queryService.getPhoto(photoReference);
+    return this.placeService.getPhoto(photoReference);
   }
 }
