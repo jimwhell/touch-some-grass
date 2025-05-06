@@ -76,7 +76,7 @@ export class MapComponent implements OnChanges, AfterViewInit {
       this.mapRef.panTo(position);
       // this.renderDirections(position);
       this.zoom = 20;
-      this.getFormattedOperationalStatus();
+      // this.getFormattedOperationalStatus();
     }
   }
 
@@ -95,15 +95,15 @@ export class MapComponent implements OnChanges, AfterViewInit {
   //     .pipe(map((response) => response.result));
   // }
 
-  getFormattedOperationalStatus(): void {
-    const operationalStatus: boolean | undefined =
-      this.selectedPlace()?.current_opening_hours?.open_now;
+  // getFormattedOperationalStatus(): void {
+  //   const operationalStatus: string =
+  //     this.selectedPlace()?.open_now;
 
-    this.formattedOperationalStatus =
-      operationalStatus === true
-        ? 'Open now'
-        : operationalStatus === false
-        ? 'Closed'
-        : 'Unavailable Operational Status';
-  }
+  //   this.formattedOperationalStatus =
+  //     operationalStatus === true
+  //       ? 'Open now'
+  //       : operationalStatus === false
+  //       ? 'Closed'
+  //       : 'Unavailable Operational Status';
+  // }
 }
