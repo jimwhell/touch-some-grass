@@ -74,36 +74,7 @@ export class MapComponent implements OnChanges, AfterViewInit {
       };
       this.addMarker(position);
       this.mapRef.panTo(position);
-      // this.renderDirections(position);
       this.zoom = 20;
-      // this.getFormattedOperationalStatus();
     }
   }
-
-  // renderDirections(placeLocation: any) {
-  //   console.log(placeLocation);
-  //   const request: google.maps.DirectionsRequest = {
-  //     destination: {
-  //       lat: placeLocation.lat,
-  //       lng: placeLocation.lng,
-  //     },
-  //     origin: { lat: 15.1097476, lng: 120.61169979999998 },
-  //     travelMode: google.maps.TravelMode.DRIVING,
-  //   };
-  //   this.directionsResult$ = this.mapDirectionsService
-  //     .route(request)
-  //     .pipe(map((response) => response.result));
-  // }
-
-  // getFormattedOperationalStatus(): void {
-  //   const operationalStatus: string =
-  //     this.selectedPlace()?.open_now;
-
-  //   this.formattedOperationalStatus =
-  //     operationalStatus === true
-  //       ? 'Open now'
-  //       : operationalStatus === false
-  //       ? 'Closed'
-  //       : 'Unavailable Operational Status';
-  // }
 }
