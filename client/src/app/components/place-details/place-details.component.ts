@@ -59,7 +59,7 @@ export class PlaceDetailsComponent implements OnInit {
     this.placeService.getPlaceDetails(placeId).subscribe({
       next: (response: PlaceDetail) => {
         this.placeDetails = response;
-        console.log('Place details after formatting: ', this.placeDetails);
+        console.log('Place details after formatting: ', this.placeDetails?.reviews);
         this.emitPlaceClick($event, this.placeDetails);
       },
       error: (err) => {
