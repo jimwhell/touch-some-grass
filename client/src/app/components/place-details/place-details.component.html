@@ -1,40 +1,62 @@
+@if (placeFromList$ | async; as place) {
+
 <div
   class="flex items-center justify-between px-7 py-4 border-t-1 transition duration-500 border-gray-300 hover:opacity-75 hover:cursor-pointer"
   (click)="getPlaceDetails($event)"
 >
   <div class="flex flex-col gap-1 w-[calc(100%-140px)] px-3">
     <div class="name-container">
-      <h2 class="text-sm">{{ place()?.displayName }}</h2>
+      <h2 class="text-sm">{{ place.displayName }}</h2>
     </div>
+
+    @if (place.primaryType) {
+    <div class="category-container">
+      <h3 class="text-xs text-gray-500 font-semibold">
+        {{ place.primaryType | titlecase }}
+      </h3>
+    </div>
+    }
     <div class="operational-status-container">
       <h3 class="text-xs text-red-500 font-semibold">
         {{
-          place()?.open_now === true
+          place.open_now === true
             ? "Open"
-            : place()?.open_now === false
+            : place.open_now === false
             ? "Closed"
             : "Unavailable status"
         }}
       </h3>
     </div>
-    @if (this.place()?.primaryType) {
-    <div class="category-container">
-      <h3 class="text-xs text-gray-500 font-semibold">
-        {{ this.place()?.primaryType | titlecase }}
-      </h3>
-    </div>
-    }
     <div class="address-container w-3/4 text-black">
       <h3 class="text-xs text-gray-500 text-opacity-50">
-        {{ place()?.formattedAddress }}
+        {{ place.formattedAddress }}
       </h3>
     </div>
+    @if (place.total_acc_rating) {
+    <div class="total-ratings-container flex items-center gap-2 mt-2">
+      <div class="flex items-center">
+        <ngx-stars
+          [readonly]="true"
+          [color]="'#fde68a'"
+          [size]="1"
+          [maxStars]="5"
+          [initialStars]="place.total_acc_rating"
+        >
+        </ngx-stars>
+      </div>
+      <p class="rating-number-display-container text-sm font-light">
+        {{ place.total_acc_rating }}
+      </p>
+    </div>
+    }
   </div>
   <div class="image-container">
     <img
       class="w-[100px] h-[100px] rounded-lg"
-      [src]="place()?.photo"
-      alt="{{ place()?.displayName }}"
+      [src]="place.photo"
+      alt="{{ place.displayName }}"
     />
   </div>
 </div>
+
+}
