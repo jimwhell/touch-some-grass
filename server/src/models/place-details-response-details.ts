@@ -11,6 +11,7 @@ export interface PlaceDetailsResponseDetails {
       overview: string;
     };
     reviews?: PlaceReview[];
+    rating?: number;
   };
   status: string;
 }
