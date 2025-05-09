@@ -64,7 +64,7 @@ export const searchPlaces = asyncHandler(
           "Content-Type": "application/json",
           "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
           "X-Goog-FieldMask":
-            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType,places.location,places.current_opening_hours", //place details to be received
+            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType,places.location,places.current_opening_hours,places.rating", //basic place details to be received
         },
       }
     );
@@ -109,6 +109,7 @@ export const searchPlaces = asyncHandler(
             photo: photoName,
             primaryType: place.primaryType,
             location: place.location,
+            total_acc_rating: place.rating, //the rating field is also fetched here, for use in the initial search results display.
           };
         } catch (error: any) {
           console.error(
@@ -178,7 +179,7 @@ export const getPlaceDetails = asyncHandler(
       throw new CustomError("Place ID not found", 400);
     }
 
-    const url: string = `https://maps.googleapis.com/maps/api/place/details/json?fields=current_opening_hours/weekday_text,reviews,editorial_summary/overview&place_id=${placeId}&key=${GOOGLE_PLACES_API_KEY}`;
+    const url: string = `https://maps.googleapis.com/maps/api/place/details/json?fields=current_opening_hours/weekday_text,reviews,editorial_summary/overview,rating&place_id=${placeId}&key=${GOOGLE_PLACES_API_KEY}`;
 
     //create place details request
     const placeDetailsResult: AxiosResponse<PlaceDetailsResponseDetails> =
@@ -191,13 +192,14 @@ export const getPlaceDetails = asyncHandler(
       );
     }
 
-    //destructure current_opening_hours and editorial summary from the place Details response
-    const { current_opening_hours, editorial_summary, ...rest } =
+    //destructure current_opening_hours, editorial summary, and rating from the place Details response
+    const { current_opening_hours, editorial_summary, rating, ...rest } =
       placeDetailsResult.data.result;
 
-    //fill the placeDetails object with the remaining fields
+    //fill the placeDetails object with the remaining fields and assign a new property named total_user_rating with the destructured rating property's value
     const placeDetails: PlaceDetails = {
       ...rest,
+      total_user_rating: rating,
     };
 
     //conduct type checking and create flattened properties for the new object to be sent to the client, omitting nested properties.
