@@ -18,4 +18,5 @@ export interface TextSearchResponseDetail {
     latitude: number;
     longitude: number;
   };
+  rating: number;
 }
