@@ -1,27 +1,49 @@
-<div class="place-container bg-white w-[400px] h-[680px] rounded-xl">
+@if (selectedPlace$ | async; as selectedPlace) {
+<div
+  class="place-container bg-white w-[400px] h-[680px] rounded-xl overflow-y-auto"
+>
   <div class="image-container">
     <img
-      class="w-full h-[250px] rounded-t-xl"
-      src="{{ selectedPlace()?.photo }}"
-      alt="{{ selectedPlace()?.displayName }}"
+      class="w-full h-[250px] rounded-t-lg"
+      src="{{ selectedPlace.photo }}"
+      alt="{{ selectedPlace.displayName }}"
     />
   </div>
+
   <div class="card-header w-full px-6 py-4">
-    <h2 class="text-xl font-light">{{ selectedPlace()?.displayName }}</h2>
+    <h2 class="text-xl font-light">{{ selectedPlace.displayName }}</h2>
+    @if (selectedPlace.primaryType) {
     <h3 class="text-xs text-gray-500 font-semibold">
-      {{ selectedPlace()?.primaryType | titlecase }}
+      {{ selectedPlace.primaryType | titlecase }}
     </h3>
+    } @if (selectedPlace && selectedPlace.total_user_rating != null) {
+    <div class="total-ratings-container flex items-center gap-2 mt-2">
+      <div class="flex items-center">
+        <ngx-stars
+          [readonly]="true"
+          [color]="'#fde68a'"
+          [size]="1"
+          [maxStars]="5"
+          [initialStars]="selectedPlace.total_user_rating"
+        >
+        </ngx-stars>
+      </div>
+      <p class="rating-number-display-container text-sm font-light">
+        {{ selectedPlace.total_user_rating }}
+      </p>
+    </div>
+    }
   </div>
+
   <div class="card-navbar w-full">
     <ul class="links-container font-light flex justify-around py-2">
       <li><a routerLink="/overview">Overview</a></li>
       <li><a routerLink="/reviews">Reviews</a></li>
     </ul>
   </div>
+
   <div class="body-container w-full px-6 py-4">
     <router-outlet></router-outlet>
-    <!-- <div class="name-container">
-        <h2>{{ selectedPlace()?.displayName }}</h2>
-      </div> -->
   </div>
 </div>
+}
