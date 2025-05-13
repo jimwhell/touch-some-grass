@@ -79,6 +79,7 @@
       </p>
     </div>
   </div>
+  @if (selectedPlace.open_now !== null) {
   <div
     class="operational-status-information-container flex gap-4 hover:cursor-pointer"
     (click)="toggleDropdown()"
@@ -176,6 +177,7 @@
       }
     </div>
   </div>
+  }
 </div>
 
 }
