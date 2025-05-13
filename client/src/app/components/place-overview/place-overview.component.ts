@@ -3,7 +3,6 @@ import { PlaceService } from '../../services/place.service';
 import { ExpandedPlace } from '../../interfaces/expanded-place';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { OperationPeriod } from '../../interfaces/operational-period';
 import { DateTime } from 'luxon';
 
 @Component({
@@ -52,14 +51,6 @@ export class PlaceOverviewComponent implements OnInit {
   //method to assign place operation status
   getOperationStatus(place: ExpandedPlace): void {
     this.operationStatus = ''; //reset operation status value upon selecting new place
-
-    if (!place.periods) {
-      console.error(
-        'Operation period not found for place: ',
-        place.displayName
-      );
-      return;
-    }
 
     //Consists of the current period based on the current week of the day that corresponds to the
     //day contained inside place weekday_text property
