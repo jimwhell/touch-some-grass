@@ -5,4 +5,5 @@ export interface PlaceDetail {
   overview: string;
   reviews?: PlaceReview[];
   total_user_rating?: number;
+  open_now?: boolean;
 }

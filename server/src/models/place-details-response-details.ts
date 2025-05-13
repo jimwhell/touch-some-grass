@@ -4,11 +4,11 @@ export interface PlaceDetailsResponseDetails {
   html_attributions: string[];
   result: {
     current_opening_hours?: {
-      open_now: boolean;
-      weekday_text: string[];
+      open_now?: boolean;
+      weekday_text?: string[];
     };
     editorial_summary?: {
-      overview: string;
+      overview?: string;
     };
     reviews?: PlaceReview[];
     rating?: number;
