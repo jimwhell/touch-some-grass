@@ -192,6 +192,8 @@ export const getPlaceDetails = asyncHandler(
       );
     }
 
+    console.log(placeDetailsResult.data.result);
+
     //destructure current_opening_hours, editorial summary, and rating from the place Details response
     const { current_opening_hours, editorial_summary, rating, ...rest } =
       placeDetailsResult.data.result;
