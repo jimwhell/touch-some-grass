@@ -18,5 +18,7 @@ router.get(
   getPlacePhoto
 );
 
+//route to fetch place details
 router.get("/:placeId", getPlaceDetails);
+
 export default router;

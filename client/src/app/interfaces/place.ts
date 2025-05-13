@@ -10,4 +10,5 @@ export interface Place {
     latitude: number;
     longitude: number;
   };
+  total_acc_rating?: number;
 }

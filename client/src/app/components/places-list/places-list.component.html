@@ -1,5 +1,8 @@
 @if (places$ | async; as queryResult) {
-<div class="places-list-container bg-white rounded-xl">
+<div
+  [ngClass]="{ 'h-[550px]': queryResult.length > 0 }"
+  class="places-list-container bg-white rounded-xl overflow-y-auto"
+>
   @for (place of queryResult; track place.id) {
   <div class="results-container">
     <app-place-details

@@ -12,6 +12,7 @@
     </p>
   </div>
   } -->
+
   <div class="address-container flex items-center font-light">
     <div class="icon-container mr-2">
       <svg
@@ -78,6 +79,7 @@
       </p>
     </div>
   </div>
+  @if (selectedPlace.open_now !== null) {
   <div
     class="operational-status-information-container flex gap-4 hover:cursor-pointer"
     (click)="toggleDropdown()"
@@ -118,15 +120,28 @@
     </div>
     <div class="info-container relative flex flex-col justify-center">
       <div class="button-container flex">
-        <p class="text-sm font-light">
+        <p
+          [ngClass]="{
+            'text-red-500': !selectedPlace.open_now,
+            'text-green-500': selectedPlace.open_now
+          }"
+          class="text-sm font-light"
+        >
           {{
-            selectedPlace.open_now === true
+            selectedPlace.open_now
               ? "Open"
-              : selectedPlace.open_now === false
+              : !selectedPlace.open_now
               ? "Closed"
               : "Unavailable status"
           }}
         </p>
+        @if (operationStatus) {
+        <p class="text-sm font-light ml-2">
+          {{ operationStatus }}
+        </p>
+        }
+
+        <p class="text-sm font-medium"></p>
         <button
           class="hover:cursor-pointer"
           type="button"
@@ -162,6 +177,7 @@
       }
     </div>
   </div>
+  }
 </div>
 
 }
