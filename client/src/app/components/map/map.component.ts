@@ -35,8 +35,8 @@ export class MapComponent implements OnChanges, AfterViewInit {
   directionsResult$!: Observable<google.maps.DirectionsResult | undefined>;
   selectedPlace: InputSignal<ExpandedPlace | undefined> =
     input<ExpandedPlace>();
-  center: google.maps.LatLngLiteral = { lat: 37.7749, lng: -122.4194 };
-  zoom: number = 10;
+  center: google.maps.LatLngLiteral = { lat: 13.41, lng: 122.56 };
+  zoom: number = 6;
   formattedOperationalStatus!: string;
   markerPosition!: google.maps.LatLngLiteral;
   markerOptions: google.maps.marker.AdvancedMarkerElementOptions = {
