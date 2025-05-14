@@ -1,13 +1,15 @@
 <div class="form-container flex flex-col justify-center m-2 px-7 py-4">
   <form [formGroup]="queryForm" (ngSubmit)="submitQuery()">
     <div class="flex flex-col">
-      <label class="font-light" for="query">Search for places</label>
+      <h1 class="font-medium text-xl">Touch Some Grass</h1>
+      <label class="font-light" for="query">Search for places.</label>
       <div class="search-bar flex my-4 items-center bg-red-700 rounded-lg">
         <input
-          class="py-2 px-3 w-4/5 bg-gray-100 outline-none rounded-"
+          class="py-2 px-3 w-4/5 bg-gray-100 outline-none rounded placeholder-gray-500 text-sm"
           id="query"
           type="text"
           formControlName="query"
+          placeholder="Search where to buy guns in Pampanga"
         />
         <button
           class="w-1/5 flex justify-center hover:cursor-pointer"
