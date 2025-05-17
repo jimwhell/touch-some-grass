@@ -8,9 +8,15 @@ import { Place } from "../models/place";
 import { PlacePhoto } from "../models/placePhoto";
 import { TextSearchResponse } from "../models/text-search-response";
 import { TextSearchResponseDetail } from "../models/text-search-response-detail";
-import { validationResult, matchedData } from "express-validator";
+import {
+  validationResult,
+  matchedData,
+  Result,
+  ValidationError,
+} from "express-validator";
 import { PlaceDetailsResponseDetails } from "../models/place-details-response-details";
 import { PlaceDetails } from "../models/place-details";
+import { RequestQuery } from "../models/request-query";
 
 dotenv.config();
 
@@ -30,12 +36,13 @@ export const searchPlaces = asyncHandler(
       Record<string, any>,
       unknown,
       SearchQuery,
-      Record<string, any>
+      { nextPageToken?: string }
     >,
     res: Response
   ) => {
-    const result = validationResult(req);
+    const result: Result<ValidationError> = validationResult(req); //retrieve validation result for placeQuery from the request body
 
+    //conditional check to verify if the validation result contains no errors
     if (!result.isEmpty()) {
       const resultArray = result.array();
       const errorMessages = resultArray.map((result) => result.msg);
@@ -43,48 +50,54 @@ export const searchPlaces = asyncHandler(
       return;
     }
 
-    //extract the query from the request body
+    //retrieve the validated data
     const data: Record<string, SearchQuery> = matchedData(req);
-    const query = data.query;
-    console.log(`query: ${query}`);
+    const placeQuery = data.query;
 
-    if (!query) {
+    if (!placeQuery) {
       throw new CustomError("No query found", 404);
     }
 
-    //create a post request using axios and specify the place details to be received in the response in the fieldmask
-    const textSearchResult = await axios.post<TextSearchResponse>(
-      PLACES_API_URL + ":searchText", //append searchText to API url
-      {
-        textQuery: query, // query to be passed
-        maxResultCount: 5, //number of results to be returned
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
-          "X-Goog-FieldMask":
-            "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType,places.location,places.current_opening_hours,places.rating", //basic place details to be received
-        },
-      }
-    );
+    const nextPageToken: string | undefined = req.query.nextPageToken; //extract nextPageToken from the request query parameters
+
+    console.log("Text Query: ", placeQuery);
+    console.log("Token: ", nextPageToken);
+
+    //construct the request body to include the textQuery string from the body
+    const requestBody = {
+      textQuery: placeQuery,
+      ...(nextPageToken && { pageToken: nextPageToken }), // if nextPageToken exists, assign it to an object and spread it to the requestBody object
+    };
+
+    //construct the initial textSearch request
+    const textSearchResult: AxiosResponse<TextSearchResponse, unknown> =
+      await axios.post<TextSearchResponse>(
+        `${PLACES_API_URL}:searchText`,
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
+            "X-Goog-FieldMask":
+              "places.displayName.text,places.formattedAddress,places.googleMapsUri,places.id,places.photos,places.primaryType,places.location,places.current_opening_hours,places.rating,nextPageToken",
+          },
+        }
+      );
 
     if (!textSearchResult) {
       throw new CustomError("Invalid response from Places", 500);
     }
 
-    //only include places with photos
-    const filteredPlaces = textSearchResult.data.places.filter(
-      (place: TextSearchResponseDetail) =>
-        place.photos && place.photos.length > 0
-    );
+    const filteredPlaces: TextSearchResponseDetail[] =
+      textSearchResult.data.places.filter(
+        (place: TextSearchResponseDetail) =>
+          place.photos && place.photos.length > 0
+      );
 
-    //return an array of place objects with the operationalStatus property by making an axios call to the Place Details API for each place object
     const places: Place[] = await Promise.all(
       filteredPlaces.map(async (place) => {
         const photoName = place.photos[0].name;
         const placeId = place.id;
-
         try {
           const { data } = await axios.get(
             `https://maps.googleapis.com/maps/api/place/details/json`,
@@ -99,7 +112,6 @@ export const searchPlaces = asyncHandler(
 
           const openNow = data.result?.current_opening_hours?.open_now ?? null;
 
-          //resolve the promise to the
           return {
             id: place.id,
             formattedAddress: place.formattedAddress,
@@ -109,7 +121,7 @@ export const searchPlaces = asyncHandler(
             photo: photoName,
             primaryType: place.primaryType,
             location: place.location,
-            total_acc_rating: place.rating, //the rating field is also fetched here, for use in the initial search results display.
+            total_acc_rating: place.rating,
           };
         } catch (error: any) {
           console.error(
@@ -121,7 +133,15 @@ export const searchPlaces = asyncHandler(
       })
     );
 
-    res.status(200).send(places);
+    const results: Record<string, unknown> = {
+      places,
+    };
+
+    if (textSearchResult.data.nextPageToken) {
+      results.nextPageToken = textSearchResult.data.nextPageToken;
+    }
+
+    res.status(200).send(results);
   }
 );
 
@@ -191,8 +211,6 @@ export const getPlaceDetails = asyncHandler(
         502
       );
     }
-
-    console.log(placeDetailsResult.data.result);
 
     //destructure current_opening_hours, editorial summary, and rating from the place Details response
     const { current_opening_hours, editorial_summary, rating, ...rest } =
