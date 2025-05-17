@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -12,9 +12,14 @@ export class ApiService {
 
   post<TResponse, TRequest>(
     url: string,
-    body: TRequest
+    body: TRequest,
+    options?: { params: HttpParams }
   ): Observable<TResponse> {
-    return this.httpClient.post<TResponse>(`${this.baseUrl}${url}`, body);
+    return this.httpClient.post<TResponse>(
+      `${this.baseUrl}${url}`,
+      body,
+      options
+    );
   }
 
   get<TResponse>(url: string): Observable<TResponse> {
