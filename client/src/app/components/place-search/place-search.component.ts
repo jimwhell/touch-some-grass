@@ -21,6 +21,7 @@ import { CommonModule } from '@angular/common';
 export class PlaceSearchComponent {
   // Inject FormBuilder instance using Angular's inject function
   private formBuilder = inject(FormBuilder);
+  searchBarIsLoading: boolean = false;
 
   places$!: Observable<Place[]>;
 
@@ -41,19 +42,25 @@ export class PlaceSearchComponent {
   // Submit the form, send the query to the backend, and update the places list
   submitQuery() {
     if (this.queryForm.valid) {
+      this.searchBarIsLoading = true;
+      console.log('Search bar is loading: ', this.searchBarIsLoading);
       // Extract the query value; fallback not needed due to validator but kept safe
       const queryValue = this.query?.value || '';
 
       // Build the request body according to PlaceQuery interface
       const requestBody: PlaceQuery = { query: queryValue };
-
+      this.placeService.setQuery(requestBody);
       // Call the service to fetch places, and handle response or error
       this.placeService.searchPlaces(requestBody).subscribe({
-        next: () => {},
+        next: () => {
+          this.searchBarIsLoading = false;
+        },
         error: (err) => {
+          this.searchBarIsLoading = false;
           console.error('Error fetching search results');
         },
       });
+      console.log('Search bar is loading: ', this.searchBarIsLoading);
     }
   }
 
