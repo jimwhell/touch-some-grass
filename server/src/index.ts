@@ -17,7 +17,7 @@ const options: cors.CorsOptions = {
 
 app.use(cors(options));
 app.use(json());
-app.use(morgan("tiny"));
+// app.use(morgan("tiny"));
 
 const PORT = process.env.PORT || 3000;
 
